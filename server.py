@@ -22,17 +22,10 @@ class Handler(SimpleHTTPRequestHandler):
    jobs=[]
    for j in data.get('results',[]):
     title=j.get('title','');description=j.get('description','')
-    if not any(t in title.lower() for t in TERMS):
+   if not any(t in title.lower() for t in TERMS):
     continue
 
-band3 = bool(re.search(
-    r'\bband[\s-]*3\b',
-    title + ' ' + description,
-    re.I
-))
-
-if not band3:
-    continue
+band3 = True
     link=j.get('redirect_url','')
     if not link.startswith('https://'):continue
     salary=('£{:,.0f}–£{:,.0f}'.format(j['salary_min'],j['salary_max']) if j.get('salary_min') and j.get('salary_max') else 'See advert')
