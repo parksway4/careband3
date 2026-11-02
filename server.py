@@ -30,7 +30,12 @@ class Handler(SimpleHTTPRequestHandler):
     salary=('£{:,.0f}–£{:,.0f}'.format(j['salary_min'],j['salary_max']) if j.get('salary_min') and j.get('salary_max') else 'See advert')
     jobs.append({'id':j.get('id'),'title':title,'employer':j.get('company',{}).get('display_name','Employer not specified'),'location':j.get('location',{}).get('display_name','UK'),'salary':salary,'created':j.get('created',''),'apply_url':link,'band':'3','source':'Adzuna'})
    return self.send_json({'jobs':jobs,'count':len(jobs),'source':'Adzuna'})
-  except Exception as e:return self.send_json({'error':'Live job service unavailable. Please try again later.','jobs':[]},502)
+  except Exception as e:
+    print(f"Adzuna API error: {type(e).__name__}: {e}", flush=True)
+    return self.send_json({
+        'error': 'Live job service unavailable',
+        'jobs': []
+    }, 502)
  def send_json(self,data,status=200):
   payload=json.dumps(data).encode();self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Content-Length',str(len(payload)));self.send_header('Cache-Control','no-store');self.end_headers();self.wfile.write(payload)
 if __name__=='__main__':
