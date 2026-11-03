@@ -18,16 +18,17 @@ class Handler(SimpleHTTPRequestHandler):
   url='https://api.adzuna.com/v1/api/jobs/gb/search/1?'+urllib.parse.urlencode(args)
   try:
    req=urllib.request.Request(url,headers={'User-Agent':'CareBand3/1.0','Accept':'application/json'})
-   with urllib.request.urlopen(req,timeout=18) as response: data=json.load(response)
+   with urllib.request.urlopen(req,timeout=18) as response: data=json.load(response) 
    jobs=[]
    for j in data.get('results',[]):
-    title=j.get('title','');description=j.get('description','')
-   if not any(t in title.lower() for t in TERMS):
-    continue
-
-band3 = True
+    title=j.get('title','')
+    description=j.get('description','')
+    if not any(t in title.lower() for t in TERMS):
+     continue
+    band3 = True
     link=j.get('redirect_url','')
-    if not link.startswith('https://'):continue
+    if not link.startswith('https://'):
+     continue
     salary=('£{:,.0f}–£{:,.0f}'.format(j['salary_min'],j['salary_max']) if j.get('salary_min') and j.get('salary_max') else 'See advert')
     jobs.append({'id':j.get('id'),'title':title,'employer':j.get('company',{}).get('display_name','Employer not specified'),'location':j.get('location',{}).get('display_name','UK'),'salary':salary,'created':j.get('created',''),'apply_url':link,'band':'3','source':'Adzuna'})
    return self.send_json({'jobs':jobs,'count':len(jobs),'source':'Adzuna'})
